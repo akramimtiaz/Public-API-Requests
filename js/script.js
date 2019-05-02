@@ -1,13 +1,30 @@
 /* Treehouse FSJS Techdegree
- * Project 5 - Public API Requests
+ * Project 5 - Public API Requests "1990-07-14T12:13:46Z
 */
 
+/** 
+    * Accepts a date in the format of 'YYYY-MM-DDTHH:MM:SSZ'
+    * and returns a date in the format of 'DD/MM/YYYY'
+    * @param   {string}     the date to be formatted
+    * @return  {string}     a string in the format of DD/MM/YYYY
+*/
 const formatDate = (dob) => {
 
-    const date = new Date(dob);
-    return date.toDateString().slice(4);
+    const date = dob.slice(0, dob.indexOf('T'));
+
+    const year = date.split('-')[0];
+    const month = date.split('-')[1];
+    const day = date.split('-')[2];
+
+    return `${day}/${month}/${year}`;
 };
 
+
+/** 
+    * Determines if the fetch request has succeeded by evaluating the status code 
+    * @param   {response}     the response of a fetch request
+    * @return  {promise}      promise object which is either resolved with the response or rejected
+*/
 const checkStatus = (response) => {
     if(response.ok){
         return Promise.resolve(response);
@@ -15,7 +32,12 @@ const checkStatus = (response) => {
         return Promise.reject(new Error(response.statusText));
     }
 }
-    
+
+/** 
+    * Performs a fetch request, validates the response and converts response to JSON format if successful
+    * @param   {string}       the url passed to the fetch request
+    * @return  {json}         if the request is successful, the response is converted to JSON and returned
+*/
 const fetchData = (url) => {
     return fetch(url)
         .then(checkStatus)
@@ -24,7 +46,11 @@ const fetchData = (url) => {
 };
 
 
-
+/** 
+    * Adds a provided list of user data to the gallery
+    * @param   {object}      an object containing an array of user profile objects
+    * @return  {object}      param object
+*/
 const generateGallery = (users) => {
 
     const gallery = document.querySelector('#gallery');
@@ -43,13 +69,15 @@ const generateGallery = (users) => {
         </div>`;
         gallery.innerHTML += card;
     });
-
-    //might want to change this later on -\_(:/)_/-
+    //to be used in modal creation
     return users;
 };
 
 
-
+/** 
+    * Creates a list of hidden modal boxes provided a list of user data 
+    * @param   {object}      an object containing an array of user profile objects
+*/
 const generateModal = (users) => {
 
     const body = document.querySelector('body');
@@ -77,26 +105,38 @@ const generateModal = (users) => {
         </div>
         `;
         body.innerHTML += modalBox;
+        //select all modal boxes currently on the document
         const modalBoxElement = document.querySelectorAll('.modal-container');
+        //obtain the most recent modal box added to the document and hide it
         modalBoxElement[modalBoxElement.length - 1].style.display = 'none';
     });
 
 };
 
+/** 
+    * Displays the associated modal box of a profile selected in the gallery 
+    * @param   {HTML Element}      the assoc. card DIV of the profile that was selected
+*/
 const displayModal = (selectedProfile) => {
 
-    const userEmail = selectedProfile.querySelector('p').textContent;
+    const userEmail = selectedProfile.querySelector('p').textContent; //email assoc. w/ selected profile
     const modals = document.querySelectorAll('.modal-container');
 
+    //find and show the modal box which has an email matching the email of the selected profile. 
     modals.forEach(modal => {
-        modal.style.display = 'none';
-        const modalEmail = modal.querySelector('p').textContent;
+        const modalEmail = modal.querySelector('p').textContent; //email assoc. w/ curr modal box
         if(modalEmail === userEmail){
             modal.style.display = '';
+        }else {
+            modal.style.display = 'none';
         }
     });
 };
 
+/** 
+    * Configues an event handler for each card/profile within the gallery 
+    * such that the assoc. modal box is shown on click
+*/
 const configGalleryHandler = () => {
     const cards = document.querySelectorAll('.card');
     cards.forEach(card => {
@@ -106,14 +146,21 @@ const configGalleryHandler = () => {
     });
 }
 
-
+/** 
+    * Displays the associated modal box of a profile selected in the gallery 
+    * @param   {HTML Element}   the modal box currently in view
+    * @param   {string}         the id of the button that was clicked, determines the direction of the toggle i.e. next/prev
+*/
 const toggleModal = (currModal, toggle) => {
 
-    const userEmail = currModal.querySelector('p').textContent;
+    const userEmail = currModal.querySelector('p').textContent; //email assoc. w/ curr modal box
     const cards = document.querySelectorAll('.card');
-  
+    
+    //find the card/profile which has an email matching the email of the current modal box.
+    //once a match is found show either that card's/profile's previous or subsequent card/profile's modal box if applicable 
     cards.forEach(card => {
-        const cardEmail = card.querySelector('p').textContent;
+        const cardEmail = card.querySelector('p').textContent; //email assoc. w/ curr profile
+
         if(cardEmail === userEmail){
             if(toggle === 'modal-prev' && card.previousElementSibling !== null){
                 displayModal(card.previousElementSibling);
@@ -122,27 +169,36 @@ const toggleModal = (currModal, toggle) => {
             }
         }
     });
-
 }
 
+/** 
+    * Configues an event handler for each Modal Box to respond to 
+    * either the 'Prev', 'Next' or 'X' button being clicked
+*/
 const configModalHandler = () => {
 
         const modals = document.querySelectorAll('.modal-container');
 
         modals.forEach(modal => modal.addEventListener('click', (event) => {
-            console.log(event.target);
+          
             if(event.target.tagName === 'BUTTON'){
+
                 if(event.target.id === 'modal-prev' || event.target.id === 'modal-next'){
+                    //event.target.offsetParent provides the parent modal container div
                     toggleModal(event.target.offsetParent, event.target.id);
                 } else if (event.target.id === 'modal-close-btn'){
                     event.currentTarget.style.display = 'none';
                 }
+
             }
        }));
 
 }
 
-
+/** 
+    * Filters the list of profiles shown in the gallery to those matching the search string
+    * @param    {string}    the search string obtained from the search input field.
+*/
 const searchProfiles = (search) => {
 
     const cards = document.querySelectorAll('.card');
@@ -159,6 +215,9 @@ const searchProfiles = (search) => {
     });
 };
 
+/** 
+    * Creates a search form as specified in the requirements
+*/
 const createSearch = () => {
 
     const searchContainer = document.querySelector('.search-container');
@@ -171,6 +230,9 @@ const createSearch = () => {
     searchContainer.innerHTML += searchHTML;
 };
 
+/** 
+    * Configues event handlers for both the search input field and search button respectively
+*/
 const configSearchHandler = () => {
 
     const search = document.querySelector('#search-input');
