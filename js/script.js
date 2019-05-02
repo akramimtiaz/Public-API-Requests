@@ -64,7 +64,7 @@ const generateGallery = (users) => {
             <div class="card-info-container">
                 <h3 id="${user.name.first}-${user.name.last}" class="card-name cap">${user.name.first} ${user.name.last}</h3>
                 <p class="card-text">${user.email}</p>
-                <p class="card-text cap">${user.location.city}, ${user.location.state}</p>
+                <p class="card-text cap">${user.location.state}</p>
             </div>
         </div>`;
         gallery.innerHTML += card;
