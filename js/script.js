@@ -1,5 +1,5 @@
 /* Treehouse FSJS Techdegree
- * Project 5 - Public API Requests "1990-07-14T12:13:46Z
+ * Project 5 - Public API Requests
 */
 
 /** 
